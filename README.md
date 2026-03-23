@@ -240,8 +240,8 @@ Behavior notes:
 
 For the full schema and a copy-pasteable sample, see
 [docs/tfx-yaml.md](./docs/tfx-yaml.md) and [examples/tfx.yaml](./examples/tfx.yaml).
-For the concrete release runbook, see [docs/release-v0.1.0.md](./docs/release-v0.1.0.md).
-For the release summary itself, see [docs/release-notes-v0.1.0.md](./docs/release-notes-v0.1.0.md).
+For the concrete release runbook, see [docs/release-v0.1.1.md](./docs/release-v0.1.1.md).
+For the release summary itself, see [docs/release-notes-v0.1.1.md](./docs/release-notes-v0.1.1.md).
 
 ---
 

@@ -75,7 +75,7 @@ release-artifacts:
 	go build -ldflags '$(LDFLAGS)' -o dist/tfx ./cmd/tfx
 	go build -o dist/demo ./cmd/demo
 	cp README.md CHANGELOG.md LICENSE dist/
-	cp docs/release-notes-v0.1.0.md dist/RELEASE_NOTES.md
+	cp docs/release-notes-$(VERSION).md dist/RELEASE_NOTES.md
 	@if command -v shasum >/dev/null 2>&1; then \
 		shasum -a 256 dist/tfx dist/demo > dist/SHA256SUMS; \
 	else \

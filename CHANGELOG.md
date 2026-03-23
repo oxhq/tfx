@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## v0.1.1 - 2026-03-23
+
+### Changed
+
+- Promoted `main` as the canonical default branch and removed stale remote branches.
+- Aligned the `README` package map and feature summary with the actual public surface:
+  `runfx`, `formfx`, `flowfx`, `progrefx`, and the integrated `cmd/tfx` wrapper.
+- Made local release packaging resolve `dist/RELEASE_NOTES.md` from the current
+  `VERSION` instead of a hardcoded `v0.1.0` notes file.
+
+### Notes
+
+- This is a patch release focused on release hygiene, naming accuracy, and
+  mainline publishing flow.
+- No runtime API changes were introduced relative to `v0.1.0`.
+
 ## v0.1.0 - 2026-03-23
 
 ### Added
