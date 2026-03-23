@@ -56,6 +56,13 @@ It is _not_ a TUI framework. It is a low-friction, highly composable set of tool
   - Unicode/ANSI support
   - CI-awareness, `NO_COLOR`, etc
 
+- Interactive runtime and orchestration with:
+
+  - `runfx` render loops and multiplexed visuals
+  - `formfx` prompts, confirms, selects, and validation
+  - `flowfx` sequences, branches, retries, scripts, and runners
+  - `cmd/tfx` as an integrated wrapper for config-driven pipelines
+
 - Progress bars, spinners, steppers, and tables with smart rendering
 - Internal `share/` helpers: `Option[T]`, `Overload[T]` (standardized pattern)
 
@@ -66,6 +73,9 @@ It is _not_ a TUI framework. It is a low-friction, highly composable set of tool
 | Package           | Description                                               |
 | ----------------- | --------------------------------------------------------- |
 | `color/`          | Core color system: hex, RGB, ANSI, themes, rendering      |
+| `runfx/`          | Lightweight terminal runtime for composable visual loops  |
+| `formfx/`         | Prompts, confirms, selects, secrets, and validation       |
+| `flowfx/`         | Declarative flow orchestration, scripts, branching, retry |
 | `terminal/`       | Terminal detection and capability inference               |
 | `logfx/`          | Structured, badge-style logging with writers              |
 | `progrefx/`       | Progress bars, spinners, steppers, and tables             |
@@ -133,7 +143,8 @@ go run ./cmd/tfx
 ```
 
 `cmd/demo` stays as a minimal showcase. `cmd/tfx` is the integrated wrapper
-that exercises the toolkit together through `runfx`.
+that exercises `runfx`, `formfx`, `flowfx`, `logfx`, and `progrefx`
+together.
 
 ---
 
@@ -256,7 +267,7 @@ This consistency is achieved via internal helpers like `Overload()` and `Option[
 - [VISION.md](./VISION.md) – project intent and market gap
 - [DESIGN_GUIDELINES.md](./DESIGN_GUIDELINES.md) – API conventions and patterns
 - [ROADMAP.md](./ROADMAP.md) – current status and future plans
-- [MULTIPATH.md](./MULTIPATH.md) – why TermFX APIs support multiple entry paths
+- [MULTIPATH.md](./MULTIPATH.md) – why TFX APIs support multiple entry paths
 - [docs/tfx-yaml.md](./docs/tfx-yaml.md) – `cmd/tfx` config schema and execution model
 
 ---
