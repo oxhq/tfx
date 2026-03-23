@@ -1,0 +1,131 @@
+project: tfx
+description: Real automation pipeline for the TFX repository
+lanes:
+  - preview
+  - canary
+  - production
+working_dir: .
+default_flow: ci
+before_all:
+  - id: toolchain
+    title: Show Go toolchain
+    detail: Capture the active Go toolchain before the pipeline starts
+    command:
+      - go
+      - version
+
+flows:
+  - name: ci
+    description: Fast local verification for day-to-day work
+    steps:
+      - id: test
+        title: Run tests with coverage
+        detail: Execute the repo test suite and refresh coverage.out
+        command:
+          - bash
+          - tools/test.sh
+        artifacts:
+          - name: coverage
+            path: coverage.out
+            description: Combined repository coverage profile
+
+      - id: build
+        title: Build all packages
+        detail: Ensure the full module compiles
+        command:
+          - go
+          - build
+          - ./...
+
+      - id: vet
+        title: Vet all packages
+        detail: Run go vet across the module
+        command:
+          - go
+          - vet
+          - ./...
+
+  - name: quality
+    description: Full pre-merge verification
+    default_lane: canary
+    steps:
+      - id: verify
+        title: Run verify target
+        detail: Test, enforce coverage, build, vet and lint
+        command:
+          - make
+          - verify
+        artifacts:
+          - name: coverage
+            path: coverage.out
+            description: Combined repository coverage profile
+
+  - name: release
+    description: Build release-ready binaries and notes
+    default_lane: canary
+    require_approval: true
+    before_all:
+      - id: release-version
+        title: Print release version
+        detail: Show the version that will be embedded into release binaries
+        command:
+          - make
+          - print-version
+    steps:
+      - id: verify
+        title: Run verify target
+        detail: Validate the repository before packaging artifacts
+        lanes:
+          - canary
+          - production
+        command:
+          - make
+          - verify
+        artifacts:
+          - name: coverage
+            path: coverage.out
+            description: Combined repository coverage profile
+
+      - id: package
+        title: Build release artifacts
+        detail: Produce versioned binaries, metadata and checksums in dist/
+        lanes:
+          - canary
+          - production
+        command:
+          - make
+          - release-artifacts
+        artifacts:
+          - name: wrapper-binary
+            path: dist/tfx
+            description: Built wrapper binary
+          - name: demo-binary
+            path: dist/demo
+            description: Built demo binary
+          - name: version-file
+            path: dist/VERSION
+            description: Version embedded into the release bundle
+          - name: checksums
+            path: dist/SHA256SUMS
+            description: Checksums for release binaries
+          - name: release-notes
+            path: dist/CHANGELOG.md
+            description: Release changelog included in the bundle
+
+    after_all:
+      - id: packaged-version
+        title: Validate packaged wrapper version
+        detail: Execute the packaged wrapper to confirm embedded version metadata
+        command:
+          - ./dist/tfx
+          - --version
+
+    on_failure:
+      - id: status
+        title: Show git status
+        detail: Capture repository state when a release run fails
+        command:
+          - git
+          - status
+          - --short
+        continue_on_error: true

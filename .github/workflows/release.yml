@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build release archives
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build archive
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
+          VERSION: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          build_date="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          archive_dir="release/tfx_${VERSION#v}_${GOOS}_${GOARCH}"
+          mkdir -p "$archive_dir"
+          ldflags="-X main.Version=${VERSION} -X main.Commit=${COMMIT} -X main.BuildDate=${build_date}"
+          go build -trimpath -ldflags "$ldflags" -o "$archive_dir/tfx" ./cmd/tfx
+          go build -trimpath -ldflags "$ldflags" -o "$archive_dir/demo" ./cmd/demo
+          printf "%s\n" "$VERSION" > "$archive_dir/VERSION"
+          cp README.md CHANGELOG.md LICENSE "$archive_dir"/
+          tar -C release -czf "${archive_dir}.tar.gz" "$(basename "$archive_dir")"
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: tfx-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: release/*.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub release
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Download archives
+        uses: actions/download-artifact@v8
+        with:
+          merge-multiple: true
+          path: release
+
+      - name: Prepare checksums and release notes
+        run: |
+          set -euo pipefail
+          (cd release && sha256sum *.tar.gz > SHA256SUMS)
+          notes_file="docs/release-notes-${GITHUB_REF_NAME}.md"
+          if [ -f "$notes_file" ]; then
+            cp "$notes_file" release/RELEASE_NOTES.md
+          else
+            printf '# TFX %s\n\nRelease artifacts for %s.\n' "$GITHUB_REF_NAME" "$GITHUB_REF_NAME" > release/RELEASE_NOTES.md
+          fi
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          default_title="TFX ${GITHUB_REF_NAME}: Terminal Toolkit Release"
+          if existing_title="$(gh release view "$GITHUB_REF_NAME" --json name --jq .name 2>/dev/null)"; then
+            title="$existing_title"
+            if [ -z "$title" ] || [ "$title" = "$GITHUB_REF_NAME" ]; then
+              title="$default_title"
+            fi
+            gh release edit "$GITHUB_REF_NAME" --title "$title" --notes-file release/RELEASE_NOTES.md
+            gh release upload "$GITHUB_REF_NAME" release/*.tar.gz release/SHA256SUMS --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" release/*.tar.gz release/SHA256SUMS \
+              --title "$default_title" \
+              --notes-file release/RELEASE_NOTES.md
+          fi

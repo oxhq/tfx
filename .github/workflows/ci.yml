@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    tags-ignore:
+      - "v*"
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  verify:
+    name: Test and build
+    runs-on: ubuntu-latest
+    env:
+      COVERAGE_THRESHOLD: "80"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run tests with coverage
+        run: go test -coverprofile=coverage.out ./...
+
+      - name: Enforce coverage threshold
+        run: |
+          coverage=$(go tool cover -func=coverage.out | awk '/^total:/ {gsub("%","",$3); print $3}')
+          echo "Total coverage: ${coverage}%"
+          awk -v cov="$coverage" -v threshold="$COVERAGE_THRESHOLD" 'BEGIN { exit((cov + 0) < (threshold + 0) ? 1 : 0) }'
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run golangci-lint
+        env:
+          GOTOOLCHAIN: auto
+        run: go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.4 run --timeout=5m

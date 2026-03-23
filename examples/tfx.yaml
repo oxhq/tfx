@@ -1,0 +1,96 @@
+project: tfx
+description: TFX local automation
+lanes:
+  - preview
+  - canary
+  - production
+working_dir: .
+default_flow: ci
+flows:
+  - name: ci
+    description: Fast local verification
+    before_all:
+      - id: prep
+        title: Prepare workspace
+        detail: Print the Go toolchain version before the pipeline starts
+        command:
+          - go
+          - version
+    steps:
+      - id: test
+        title: Run tests
+        detail: Execute repo tests and write coverage.out
+        command:
+          - go
+          - test
+          - -coverprofile=coverage.out
+          - ./...
+
+      - id: build
+        title: Build binaries
+        detail: Compile the wrapper binary into dist/
+        command:
+          - go
+          - build
+          - -o
+          - dist/tfx
+          - ./cmd/tfx
+
+  - name: release
+    description: Release candidate pipeline
+    default_lane: canary
+    require_approval: true
+    secret_prompt: Release token
+    secret_env: TFX_SECRET
+    steps:
+      - id: test
+        title: Run tests
+        detail: Execute repo tests
+        command:
+          - go
+          - test
+          - ./...
+
+      - id: vet
+        title: Vet packages
+        detail: Run vet on higher lanes
+        lanes:
+          - canary
+          - production
+        command:
+          - go
+          - vet
+          - ./...
+
+      - id: coverage
+        title: Check coverage threshold
+        detail: Enforce the project coverage floor
+        lanes:
+          - production
+        command:
+          - make
+          - check-coverage
+        continue_on_error: true
+
+      - id: package
+        title: Package release artifacts
+        detail: Write release outputs into dist/
+        lanes:
+          - production
+        command:
+          - go
+          - build
+          - -o
+          - dist/tfx
+          - ./cmd/tfx
+        artifacts:
+          - name: binary
+            path: dist/tfx
+            description: Built wrapper binary
+
+    on_failure:
+      - id: cleanup
+        title: Print workspace for debugging
+        detail: Lightweight failure hook for local diagnostics
+        command:
+          - pwd
