@@ -21,6 +21,11 @@ Examples include:
 - documentation or asset build pipelines
 - release packaging workflows for standalone tools
 
+Real adopters in this workspace now include:
+
+- `morfx`, where TFX wraps standalone verification and release-oriented flows
+- `mitl`, where TFX wraps CI verification, `doctor`/preflight checks, and local packaging
+
 ## What TFX Should Own
 
 Keep `cmd/tfx` focused on orchestration:

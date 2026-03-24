@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+Target: `v0.2.0`
+
+### Changed
+
+- Clarified the runtime/product boundary in the public docs, design guidelines,
+  and roadmap.
+- Promoted `Try*` as the safe contract and added explicit `Must*` wrappers
+  across the main multipath APIs.
+- Added install docs and scripts plus Windows release packaging support.
+- Expanded the dogfooding story from Morfx-only to a generic external-tool
+  pattern with real adoption in both `morfx` and `mitl`.
+
 ## v0.1.1 - 2026-03-23
 
 ### Changed

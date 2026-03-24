@@ -249,6 +249,12 @@ This is also the pattern TFX uses to host other standalone tools. `morfx` is
 the reference example: Morfx owns the refactoring engine, while TFX supplies
 the runtime shell around it.
 
+That is no longer just a template. TFX is already dogfooding this pattern in:
+
+- `tfx` itself for local `ci`, `quality`, and `release`
+- `morfx` for standalone tool verification and release orchestration
+- `mitl` for CLI verification, doctor/preflight checks, and local release packaging
+
 The pattern is generic, not Morfx-specific. See:
 
 - [docs/dogfooding-external-tools.md](/Users/garaekz/Documents/projects/go/tfx/docs/dogfooding-external-tools.md)
