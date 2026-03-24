@@ -16,6 +16,19 @@ It ensures a consistent developer experience and a predictable API surface acros
 
 ---
 
+## 🧭 Runtime Guardrails
+
+- `cmd/tfx` is a wrapper runtime, not a general application framework.
+- Tool-hosting is allowed; tool ownership is not.
+- `runfx` manages loops and rendering only.
+- `formfx` collects input only.
+- `flowfx` orchestrates work only.
+- `progrefx` renders progress, tables, and spinners only.
+- Repo-specific business logic belongs in the hosted tool, not in TFX.
+- Avoid hidden global state. If state exists, make it explicit in config or runtime storage.
+
+---
+
 ## 📐 API Shapes
 
 ### 1. Functional Options
@@ -40,6 +53,7 @@ Always allow:
 - Fluent chaining usage: `Start(WithX, WithY...)`
 
 Use `share.OverloadWithOptions` internally to keep all paths unified.
+Prefer `Try*` as the recoverable path when invalid config is possible. Thin panic wrappers are acceptable only as ergonomic shorthand around validated `Try*` constructors.
 
 **Typed sibling required:** If you expose `Start(...any)`, you **must also** expose `StartWith(cfg)` to retain type-safe DX and IDE discoverability.
 
@@ -91,6 +105,7 @@ bar2.Start()
 ## 📦 Versioning & Compatibility
 
 - No breaking changes before `v1.0.0`.
+- Semver docs must track the shipped release state, not aspirational milestones.
 - All public APIs must be reviewed for:
 
   - Overload safety

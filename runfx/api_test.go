@@ -35,6 +35,16 @@ func TestTryStartRejectsInvalidMultipathArgs(t *testing.T) {
 	}
 }
 
+func TestMustStartPanicsOnInvalidMultipathArgs(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected panic")
+		}
+	}()
+
+	_ = MustStart("bad")
+}
+
 func TestResolveTTYFilePrefersOutputThenInput(t *testing.T) {
 	outReader, outWriter, err := os.Pipe()
 	if err != nil {

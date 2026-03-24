@@ -1,7 +1,7 @@
-# Dogfooding `morfx` Standalone with `cmd/tfx`
+# Dogfooding `morfx` as a Standalone Tool with `cmd/tfx`
 
-If the next serious dogfooding target for TFX is `morfx`, use the standalone
-binary path, not the MCP adapter.
+If the dogfooding target is `morfx`, use the standalone binary path, not the
+MCP adapter.
 
 That is the better test for `cmd/tfx` because it validates the wrapper against
 the same execution model that users will run locally or in CI:
@@ -70,7 +70,9 @@ Let the `morfx` repository own:
 
 ## Template
 
-Start from [examples/tfx-morfx-standalone.yaml](../examples/tfx-morfx-standalone.yaml).
+Start from [examples/tfx-morfx-standalone.yaml](../examples/tfx-morfx-standalone.yaml)
+if Morfx is the target, or [examples/tfx-external-tool.yaml](../examples/tfx-external-tool.yaml)
+for a generic external-tool template.
 
 The template intentionally uses:
 

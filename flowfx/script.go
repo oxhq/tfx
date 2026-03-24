@@ -71,8 +71,17 @@ func newScript(cfg ScriptConfig) *Script {
 // Supports two usage patterns:
 //   - NewScript()                          // Zero-config, uses defaults
 //   - NewScript(config)                    // Config struct
+//
+// NewScript is kept as a zero-ceremony compatibility alias for MustNewScript.
+// Prefer TryNewScript when args may be user-provided or otherwise fallible.
 func NewScript(args ...any) *Script {
-	return must(TryNewScript(args...))
+	return MustNewScript(args...)
+}
+
+// MustNewScript creates a new script flow and panics on invalid multipath
+// input.
+func MustNewScript(args ...any) *Script {
+	return mustValue(TryNewScript(args...))
 }
 
 // TryNewScript creates a new script flow without panicking on invalid args.

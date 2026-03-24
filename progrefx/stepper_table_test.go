@@ -82,6 +82,16 @@ func TestTryStepperRejectsInvalidMultipathArgs(t *testing.T) {
 	}
 }
 
+func TestMustStepperRejectsInvalidArgs(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected MustStepper to panic")
+		}
+	}()
+
+	MustStepper("bad")
+}
+
 func TestTableRenderAndBuilder(t *testing.T) {
 	t.Parallel()
 
@@ -128,4 +138,14 @@ func TestTryTableRejectsInvalidMultipathArgs(t *testing.T) {
 	if _, err := TryTable("bad"); err == nil {
 		t.Fatal("expected invalid table config error")
 	}
+}
+
+func TestMustTableRejectsInvalidArgs(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected MustTable to panic")
+		}
+	}()
+
+	MustTable("bad")
 }

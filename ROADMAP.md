@@ -76,19 +76,21 @@ This document outlines the current feature set, future plans, and priorities for
 
 ---
 
-## Immediate Priorities before Launch
+## Current Status
 
-- ✅ Achieve 100% test coverage on all core packages
-- 🧪 Add edge case tests to ensure robustness and correctness
-- 🛠️ Stabilize and optimize existing features for real-world usage
-- 📖 Expand documentation with clear examples and usage patterns
-- 🔍 Perform full code review pass for maintainability and DX
-- 🎯 Finalize public APIs and remove experimental/unpolished code
-- 🏗️ Enforce race-safe builds/tests via `Makefile` and CI
-- 🗂️ Refactor project structure for clarity and navigation
-- 📦 Publish a polished release note and changelog for the integrated wrapper
-- 📬 Incorporate early user feedback to guide roadmap
-- 🚀 Deliver a polished, minimal, opinionated `v0.1.0`
+- `v0.1.1` is shipped and published.
+- The module path is `github.com/oxhq/tfx`.
+- CI and release automation are live.
+- Current total test coverage is `86.8%` as of `2026-03-23`, with the remaining gaps concentrated in `cmd/tfx`, `terminal`, `formfx`, and `writer`.
+- The coverage floor is `80%`; TFX is above that threshold, but it is not yet at the aspirational `100%` mark once written here.
+
+## Next Phase (`v0.2.0`)
+
+- Harden distribution and installation so the wrapper is easy to consume outside this repo.
+- Keep the safe API path explicit: `Try*` for recoverable validation, thin ergonomic wrappers for convenience.
+- Dogfood TFX in more than one host repo so the runtime stays generic instead of becoming a one-off app shell.
+- Tighten the wrapper contract around artifacts, state, and release flows without drifting into product-specific business logic.
+- Keep pushing coverage up in the remaining low areas, but treat the threshold as a floor, not the finish line.
 
 ## 🧠 Planned (Post-v0.1.x)
 

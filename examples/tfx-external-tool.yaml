@@ -1,0 +1,108 @@
+project: external-tool
+description: Generic standalone tool pipeline orchestrated by TFX
+lanes:
+  - preview
+  - canary
+  - production
+working_dir: .
+default_flow: ci
+
+flows:
+  - name: ci
+    description: Fast verification for a standalone tool repository
+    before_all:
+      - id: toolchain
+        title: Print Go toolchain
+        command:
+          - go
+          - version
+    steps:
+      - id: test
+        title: Run repository tests
+        command:
+          - go
+          - test
+          - ./...
+
+      - id: build
+        title: Build standalone binary
+        detail: Replace ./cmd/toolx with the real entrypoint for the target repo
+        command:
+          - go
+          - build
+          - -o
+          - bin/toolx
+          - ./cmd/toolx
+        artifacts:
+          - name: toolx-binary
+            path: bin/toolx
+            description: Built standalone CLI binary
+
+      - id: smoke
+        title: Smoke test the binary
+        detail: Use a low-risk command such as --help or version
+        command:
+          - ./bin/toolx
+          - --help
+
+  - name: dogfood
+    description: Exercise real workflow scenarios through repo-local harnesses
+    default_lane: canary
+    steps:
+      - id: build
+        title: Build standalone binary
+        command:
+          - go
+          - build
+          - -o
+          - bin/toolx
+          - ./cmd/toolx
+        artifacts:
+          - name: toolx-binary
+            path: bin/toolx
+            description: Built standalone CLI binary
+
+      - id: scenarios
+        title: Run workflow harness
+        detail: Keep the target tool invocation details in a repo-local script
+        env:
+          TOOLX_BIN: ./bin/toolx
+        command:
+          - bash
+          - ./scripts/dogfood-scenarios.sh
+        artifacts:
+          - name: run-log
+            path: artifacts/dogfood.log
+            description: Captured workflow execution log
+            optional: true
+          - name: snapshots
+            path: artifacts/snapshots
+            description: Snapshot or diff output from the standalone runs
+            optional: true
+
+  - name: release
+    description: Build release-ready standalone artifacts
+    default_lane: canary
+    require_approval: true
+    secret_prompt: Release token
+    secret_env: TOOLX_RELEASE_TOKEN
+    steps:
+      - id: verify
+        title: Run strict verification
+        command:
+          - make
+          - verify
+
+      - id: package
+        title: Package standalone release artifacts
+        detail: Replace this with the repo's actual release packaging target
+        lanes:
+          - canary
+          - production
+        command:
+          - make
+          - release-artifacts
+        artifacts:
+          - name: release-dist
+            path: dist
+            description: Packaged standalone release outputs

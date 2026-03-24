@@ -6,7 +6,7 @@ import (
 	"github.com/oxhq/tfx/internal/share"
 )
 
-func must[T any](value T, err error) T {
+func mustValue[T any](value T, err error) T {
 	if err != nil {
 		panic(err)
 	}

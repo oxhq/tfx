@@ -125,8 +125,17 @@ func (fr *FlowRunner) finishRun() {
 // Supports two usage patterns:
 //   - NewRunner(flow)                          // Zero-config, uses defaults
 //   - NewRunner(flow, config)                  // Config struct
+//
+// NewRunner is kept as a zero-ceremony compatibility alias for MustNewRunner.
+// Prefer TryNewRunner when args may be user-provided or otherwise fallible.
 func NewRunner(flow Flow, args ...any) *FlowRunner {
-	return must(TryNewRunner(flow, args...))
+	return MustNewRunner(flow, args...)
+}
+
+// MustNewRunner creates a new flow runner and panics on invalid multipath
+// input.
+func MustNewRunner(flow Flow, args ...any) *FlowRunner {
+	return mustValue(TryNewRunner(flow, args...))
 }
 
 // TryNewRunner creates a new flow runner without panicking on invalid args.

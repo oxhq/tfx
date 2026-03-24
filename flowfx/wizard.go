@@ -56,8 +56,16 @@ func newWizard(cfg WizardConfig) *Wizard {
 // Supports two usage patterns:
 //   - NewWizard()                          // Zero-config, uses defaults
 //   - NewWizard(config)                    // Config struct
+//
+// NewWizard is kept as a zero-ceremony compatibility alias for MustNewWizard.
+// Prefer TryNewWizard when args may be user-provided or otherwise fallible.
 func NewWizard(args ...any) *Wizard {
-	return must(TryNewWizard(args...))
+	return MustNewWizard(args...)
+}
+
+// MustNewWizard creates a new wizard flow and panics on invalid multipath input.
+func MustNewWizard(args ...any) *Wizard {
+	return mustValue(TryNewWizard(args...))
 }
 
 // TryNewWizard creates a new wizard flow without panicking on invalid args.

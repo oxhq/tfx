@@ -47,8 +47,18 @@ func newSequence(cfg SequenceConfig) *Sequence {
 // Supports two usage patterns:
 //   - NewSequence()                          // Zero-config, uses defaults
 //   - NewSequence(config)                    // Config struct
+//
+// NewSequence is kept as a zero-ceremony compatibility alias for
+// MustNewSequence. Prefer TryNewSequence when args may be user-provided or
+// otherwise fallible.
 func NewSequence(args ...any) *Sequence {
-	return must(TryNewSequence(args...))
+	return MustNewSequence(args...)
+}
+
+// MustNewSequence creates a new sequential flow and panics on invalid
+// multipath input.
+func MustNewSequence(args ...any) *Sequence {
+	return mustValue(TryNewSequence(args...))
 }
 
 // TryNewSequence creates a new sequential flow without panicking on invalid args.

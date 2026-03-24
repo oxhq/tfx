@@ -52,8 +52,18 @@ func newParallel(cfg ParallelConfig) *Parallel {
 // Supports two usage patterns:
 //   - NewParallel()                          // Zero-config, uses defaults
 //   - NewParallel(config)                    // Config struct
+//
+// NewParallel is kept as a zero-ceremony compatibility alias for
+// MustNewParallel. Prefer TryNewParallel when args may be user-provided or
+// otherwise fallible.
 func NewParallel(args ...any) *Parallel {
-	return must(TryNewParallel(args...))
+	return MustNewParallel(args...)
+}
+
+// MustNewParallel creates a new parallel flow and panics on invalid multipath
+// input.
+func MustNewParallel(args ...any) *Parallel {
+	return mustValue(TryNewParallel(args...))
 }
 
 // TryNewParallel creates a new parallel flow without panicking on invalid args.

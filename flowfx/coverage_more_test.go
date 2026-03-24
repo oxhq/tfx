@@ -204,3 +204,34 @@ func TestMustPanicsOnInvalidMultipathInput(t *testing.T) {
 
 	_ = NewSequence("bad")
 }
+
+func TestExplicitMustConstructorsPanicOnInvalidMultipathInput(t *testing.T) {
+	t.Parallel()
+
+	branchCondition := func(context.Context) (bool, error) { return true, nil }
+
+	cases := []struct {
+		name string
+		fn   func()
+	}{
+		{name: "sequence", fn: func() { _ = MustNewSequence("bad") }},
+		{name: "parallel", fn: func() { _ = MustNewParallel("bad") }},
+		{name: "mapflow", fn: func() { _ = MustNewMapFlow("bad") }},
+		{name: "script", fn: func() { _ = MustNewScript("bad") }},
+		{name: "tree", fn: func() { _ = MustNewTree("bad") }},
+		{name: "wizard", fn: func() { _ = MustNewWizard("bad") }},
+		{name: "runner", fn: func() { _ = MustNewRunner(nil, "bad") }},
+		{name: "branch", fn: func() { _ = MustNewBranch(branchCondition, "bad") }},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			defer func() {
+				if recover() == nil {
+					t.Fatal("expected explicit Must constructor to panic")
+				}
+			}()
+			tc.fn()
+		})
+	}
+}

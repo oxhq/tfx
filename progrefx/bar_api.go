@@ -35,15 +35,25 @@ func DefaultProgressConfig() ProgressConfig {
 	}
 }
 
-// Start creates a Progress component using the provided options.  It accepts
-// either a ProgressConfig or a sequence of functional options.  See
-// internal/share.OverloadWithOptions for details.
-func Start(opts ...any) *Progress {
+// MustStart creates a Progress component using the provided options and panics
+// on invalid multipath input.
+//
+// Prefer TryStart when configuration may be user-provided or otherwise fallible.
+func MustStart(opts ...any) *Progress {
 	progress, err := TryStart(opts...)
 	if err != nil {
 		panic(err)
 	}
 	return progress
+}
+
+// Start creates a Progress component using the provided options.
+//
+// Start is kept as a zero-ceremony compatibility alias for MustStart. Prefer
+// TryStart for fallible input or MustStart when panic semantics should be
+// explicit at the callsite.
+func Start(opts ...any) *Progress {
+	return MustStart(opts...)
 }
 
 // TryStart creates a Progress component using the provided options without panicking.

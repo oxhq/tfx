@@ -27,13 +27,25 @@ func DefaultTableConfig() TableConfig {
 	}
 }
 
-// Table creates a table view using multipath configuration.
-func Table(opts ...any) *TableView {
+// MustTable creates a table view using multipath configuration and panics on
+// invalid input.
+//
+// Prefer TryTable when configuration may be user-provided or otherwise fallible.
+func MustTable(opts ...any) *TableView {
 	table, err := TryTable(opts...)
 	if err != nil {
 		panic(err)
 	}
 	return table
+}
+
+// Table creates a table view using multipath configuration.
+//
+// Table is a zero-ceremony compatibility alias for MustTable. Prefer TryTable
+// for fallible input or MustTable when panic semantics should be explicit at
+// the callsite.
+func Table(opts ...any) *TableView {
+	return MustTable(opts...)
 }
 
 // TryTable creates a table view without panicking on invalid args.

@@ -24,6 +24,10 @@ jobs:
             goarch: amd64
           - goos: darwin
             goarch: arm64
+          - goos: windows
+            goarch: amd64
+          - goos: windows
+            goarch: arm64
 
     steps:
       - name: Checkout
@@ -37,28 +41,21 @@ jobs:
 
       - name: Build archive
         env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: "0"
           VERSION: ${{ github.ref_name }}
           COMMIT: ${{ github.sha }}
         run: |
           set -euo pipefail
           build_date="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-          archive_dir="release/tfx_${VERSION#v}_${GOOS}_${GOARCH}"
-          mkdir -p "$archive_dir"
-          ldflags="-X main.Version=${VERSION} -X main.Commit=${COMMIT} -X main.BuildDate=${build_date}"
-          go build -trimpath -ldflags "$ldflags" -o "$archive_dir/tfx" ./cmd/tfx
-          go build -trimpath -ldflags "$ldflags" -o "$archive_dir/demo" ./cmd/demo
-          printf "%s\n" "$VERSION" > "$archive_dir/VERSION"
-          cp README.md CHANGELOG.md LICENSE "$archive_dir"/
-          tar -C release -czf "${archive_dir}.tar.gz" "$(basename "$archive_dir")"
+          VERSION="$VERSION" COMMIT="$COMMIT" BUILD_DATE="$build_date" \
+            bash tools/release-package.sh "${VERSION}" "${{ matrix.goos }}" "${{ matrix.goarch }}" release
 
       - name: Upload archive
         uses: actions/upload-artifact@v7
         with:
           name: tfx-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: release/*.tar.gz
+          path: |
+            release/*.tar.gz
+            release/*.zip
           if-no-files-found: error
 
   release:
@@ -79,7 +76,7 @@ jobs:
       - name: Prepare checksums and release notes
         run: |
           set -euo pipefail
-          (cd release && sha256sum *.tar.gz > SHA256SUMS)
+          (cd release && sha256sum *.tar.gz *.zip > SHA256SUMS)
           notes_file="docs/release-notes-${GITHUB_REF_NAME}.md"
           if [ -f "$notes_file" ]; then
             cp "$notes_file" release/RELEASE_NOTES.md

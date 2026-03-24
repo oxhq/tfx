@@ -54,8 +54,17 @@ func newBranch(condition func(ctx context.Context) (bool, error), cfg BranchConf
 // Supports two usage patterns:
 //   - NewBranch(condition)                          // Zero-config, uses defaults
 //   - NewBranch(condition, config)                  // Config struct
+//
+// NewBranch is kept as a zero-ceremony compatibility alias for MustNewBranch.
+// Prefer TryNewBranch when args may be user-provided or otherwise fallible.
 func NewBranch(condition func(ctx context.Context) (bool, error), args ...any) *Branch {
-	return must(TryNewBranch(condition, args...))
+	return MustNewBranch(condition, args...)
+}
+
+// MustNewBranch creates a new branch flow and panics on invalid multipath
+// input.
+func MustNewBranch(condition func(ctx context.Context) (bool, error), args ...any) *Branch {
+	return mustValue(TryNewBranch(condition, args...))
 }
 
 // TryNewBranch creates a new branch flow without panicking on invalid args.

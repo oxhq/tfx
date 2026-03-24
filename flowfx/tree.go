@@ -55,8 +55,16 @@ func newTree(cfg TreeConfig) *Tree {
 // Supports two usage patterns:
 //   - NewTree()                          // Zero-config, uses defaults
 //   - NewTree(config)                    // Config struct
+//
+// NewTree is kept as a zero-ceremony compatibility alias for MustNewTree.
+// Prefer TryNewTree when args may be user-provided or otherwise fallible.
 func NewTree(args ...any) *Tree {
-	return must(TryNewTree(args...))
+	return MustNewTree(args...)
+}
+
+// MustNewTree creates a new tree flow and panics on invalid multipath input.
+func MustNewTree(args ...any) *Tree {
+	return mustValue(TryNewTree(args...))
 }
 
 // TryNewTree creates a new tree flow without panicking on invalid args.

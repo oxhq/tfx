@@ -54,10 +54,23 @@ can host real tools and workflows without turning into a full TUI framework.
 
 ---
 
+## 🧱 Runtime Boundaries
+
+- `cmd/tfx` is a wrapper runtime, not a product framework.
+- `runfx` owns event loops and rendering.
+- `formfx` owns prompts and input capture.
+- `flowfx` owns orchestration and sequencing.
+- `progrefx` owns progress, spinners, steppers, and tables.
+- Domain logic stays in the hosted tool, such as `morfx`, not inside TFX.
+- TFX may host workflows, but it should not absorb a repo's business logic or become a pseudo-TUI app shell.
+
+---
+
 ## 🔥 What TFX Will Never Be
 
 - A TUI framework.
 - A replacement for the underlying tools it hosts.
+- A pseudo-TUI framework that absorbs product business logic.
 - A runtime log server or full observability stack.
 - A “just copy this color string” toy lib.
 - An everything-and-the-kitchen-sink monolith.

@@ -217,18 +217,22 @@ flows:
 ## Standalone Tool Dogfooding
 
 `cmd/tfx` is not limited to Go package verification or to TFX itself.
-It also works well as a wrapper around a standalone CLI repository.
+It also works well as a wrapper around standalone CLI repositories, generators,
+code transformers, linters, formatters, or any other repo-local workflow.
 
-For a tool such as `morfx`, the recommended pattern is:
+The reusable pattern is:
 
-1. Build the standalone binary inside the repo.
-2. Run a low-risk smoke command such as `--help` or `version`.
-3. Execute fixture or snapshot scenarios through a repo-local harness.
-4. Package the resulting binary and any logs, diffs, or snapshots as artifacts.
+1. Build the standalone binary or tool entrypoint inside the repo.
+2. Run a low-risk smoke command such as `--help`, `version`, or `doctor`.
+3. Execute fixture, snapshot, or workflow scenarios through a repo-local harness.
+4. Package the resulting binary, logs, diffs, or snapshots as artifacts.
 
-That approach keeps TFX focused on orchestration and reporting while the target
-repository keeps ownership of the real CLI invocation details.
+That keeps TFX focused on orchestration and reporting while the target
+repository keeps ownership of the real invocation details.
 
-See [docs/dogfooding-morfx-standalone.md](./dogfooding-morfx-standalone.md)
+See [docs/dogfooding-external-tools.md](./dogfooding-external-tools.md) for the
+generic guidance and [examples/tfx-external-tool.yaml](../examples/tfx-external-tool.yaml)
+for a reusable template. If you are specifically dogfooding Morfx as a
+standalone CLI, [docs/dogfooding-morfx-standalone.md](./dogfooding-morfx-standalone.md)
 and [examples/tfx-morfx-standalone.yaml](../examples/tfx-morfx-standalone.yaml)
-for a concrete template.
+show one concrete instantiation.

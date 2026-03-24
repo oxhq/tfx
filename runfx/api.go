@@ -12,14 +12,25 @@ import (
 
 // --- MULTIPATH API FUNCTIONS ---
 
-// Start creates and starts a new Loop with multipath configuration support.
-// opts Type: any = Option[Config] | Config
-func Start(opts ...any) Loop {
+// MustStart creates a new Loop with multipath configuration support and panics
+// on invalid multipath input.
+//
+// Prefer TryStart when configuration may be user-provided or otherwise fallible.
+func MustStart(opts ...any) Loop {
 	loop, err := TryStart(opts...)
 	if err != nil {
 		panic(err)
 	}
 	return loop
+}
+
+// Start creates and starts a new Loop with multipath configuration support.
+//
+// Start is kept as a zero-ceremony compatibility alias for MustStart. Prefer
+// TryStart for fallible input or MustStart when panic semantics should be
+// explicit at the callsite.
+func Start(opts ...any) Loop {
+	return MustStart(opts...)
 }
 
 // TryStart creates a new Loop with multipath configuration support without panicking.

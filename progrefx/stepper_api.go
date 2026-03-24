@@ -25,13 +25,25 @@ func DefaultStepperConfig() StepperConfig {
 	}
 }
 
-// Stepper creates a stepper view using multipath configuration.
-func Stepper(opts ...any) *StepperView {
+// MustStepper creates a stepper view using multipath configuration and panics
+// on invalid input.
+//
+// Prefer TryStepper when configuration may be user-provided or otherwise fallible.
+func MustStepper(opts ...any) *StepperView {
 	stepper, err := TryStepper(opts...)
 	if err != nil {
 		panic(err)
 	}
 	return stepper
+}
+
+// Stepper creates a stepper view using multipath configuration.
+//
+// Stepper is a zero-ceremony compatibility alias for MustStepper. Prefer
+// TryStepper for fallible input or MustStepper when panic semantics should be
+// explicit at the callsite.
+func Stepper(opts ...any) *StepperView {
+	return MustStepper(opts...)
 }
 
 // TryStepper creates a stepper view without panicking on invalid args.

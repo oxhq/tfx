@@ -2,19 +2,23 @@ package share
 
 import "fmt"
 
-// Overload[T] provides strict one-argument coercion into T.
+// MustOverload provides strict one-argument coercion into T and panics on invalid input.
 //
-// - If no value is passed, fallback is used.
-// - If one value is passed, it MUST be T or *T.
-// - Any other type (including nil, map, or unrelated struct) triggers panic.
-//
-// This is NOT a soft cast. It’s a strict dispatch helper for multipath entry.
-func Overload[T any](have []any, fallback T) T {
+// Prefer TryOverload when args may be user-provided or otherwise fallible.
+func MustOverload[T any](have []any, fallback T) T {
 	value, err := TryOverload(have, fallback)
 	if err != nil {
 		panic(err)
 	}
 	return value
+}
+
+// Overload is a compatibility alias for MustOverload.
+//
+// Prefer TryOverload for fallible multipath parsing or MustOverload when panic
+// semantics should be explicit at the callsite.
+func Overload[T any](have []any, fallback T) T {
+	return MustOverload(have, fallback)
 }
 
 // TryOverload provides the same strict dispatch as Overload without panicking.
@@ -42,18 +46,23 @@ func TryOverload[T any](have []any, fallback T) (T, error) {
 	}
 }
 
-// OverloadWithOptions[T] handles multipath with strict rules:
+// MustOverloadWithOptions handles multipath parsing and panics on invalid input.
 //
-// - If no args: use fallback
-// - Can mix: config struct (T or *T) + functional options (Option[T])
-// - Only one config struct allowed
-// - All types must match T
-func OverloadWithOptions[T any](args []any, fallback T) T {
+// Prefer TryOverloadWithOptions when args may be user-provided or otherwise fallible.
+func MustOverloadWithOptions[T any](args []any, fallback T) T {
 	value, err := TryOverloadWithOptions(args, fallback)
 	if err != nil {
 		panic(err)
 	}
 	return value
+}
+
+// OverloadWithOptions is a compatibility alias for MustOverloadWithOptions.
+//
+// Prefer TryOverloadWithOptions for fallible multipath parsing or
+// MustOverloadWithOptions when panic semantics should be explicit at the callsite.
+func OverloadWithOptions[T any](args []any, fallback T) T {
+	return MustOverloadWithOptions(args, fallback)
 }
 
 // TryOverloadWithOptions handles multipath parsing without panicking.

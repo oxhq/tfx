@@ -160,3 +160,40 @@ func TestTryConstructorsRejectInvalidMultipathArgs(t *testing.T) {
 		})
 	}
 }
+
+func TestMustConstructorAliasesPanicOnInvalidInput(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		fn   func()
+	}{
+		{name: "sequence", fn: func() { _ = MustNewSequence("bad") }},
+		{name: "parallel", fn: func() { _ = MustNewParallel("bad") }},
+		{name: "mapflow", fn: func() { _ = MustNewMapFlow("bad") }},
+		{name: "script", fn: func() { _ = MustNewScript("bad") }},
+		{name: "tree", fn: func() { _ = MustNewTree("bad") }},
+		{name: "wizard", fn: func() { _ = MustNewWizard("bad") }},
+		{name: "runner", fn: func() { _ = MustNewRunner(nil, "bad") }},
+		{
+			name: "branch",
+			fn: func() {
+				_ = MustNewBranch(
+					func(context.Context) (bool, error) { return true, nil },
+					"bad",
+				)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				if recover() == nil {
+					t.Fatal("expected panic")
+				}
+			}()
+			tt.fn()
+		})
+	}
+}

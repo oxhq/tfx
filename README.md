@@ -46,6 +46,15 @@ Use TFX when you want one or more of these at the same time:
 - 🎨 _Themeable by design_: ANSI + semantic palettes.
 - 🧱 _Minimal dependencies_: No third-party bloat.
 
+## 🧱 Runtime Boundaries
+
+- `cmd/tfx` is a wrapper runtime, not a product framework.
+- `runfx` owns loops and rendering.
+- `formfx` owns prompts and input capture.
+- `flowfx` owns orchestration and sequencing.
+- `progrefx` owns progress, spinners, steppers, and tables.
+- Domain logic belongs in the hosted tool or repo, not inside TFX.
+
 ---
 
 ## 🔥 Features
@@ -146,6 +155,24 @@ for i := 0; i < 10; i++ {
 }
 ```
 
+When input may be user-provided or otherwise fallible, prefer the safe `Try*`
+constructors. Panic-on-error entrypoints now have explicit `Must*` siblings:
+
+```go
+loop, err := runfx.TryStart(runfx.Config{TickInterval: 100 * time.Millisecond})
+if err != nil {
+    return err
+}
+
+spinner, err := progrefx.TryStartSpinner(progrefx.SpinnerConfig{Label: "Syncing"})
+if err != nil {
+    return err
+}
+
+_ = loop
+_ = spinner
+```
+
 ---
 
 ## 🖼️ Live Preview
@@ -172,6 +199,25 @@ go run ./cmd/tfx
 `cmd/demo` stays as a minimal showcase. `cmd/tfx` is the integrated wrapper
 that exercises `runfx`, `formfx`, `flowfx`, `logfx`, and `progrefx`
 together.
+
+## 📥 Installation
+
+See the full guide in [docs/install.md](/Users/garaekz/Documents/projects/go/tfx/docs/install.md).
+
+Quick install on Unix-like systems:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.sh | bash
+```
+
+Quick install on Windows PowerShell:
+
+```powershell
+irm https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.ps1 | iex
+```
+
+Release assets are built for `linux`, `darwin`, and `windows` on `amd64` and
+`arm64`.
 
 ---
 
@@ -202,6 +248,12 @@ This repository ships its own real root config in
 This is also the pattern TFX uses to host other standalone tools. `morfx` is
 the reference example: Morfx owns the refactoring engine, while TFX supplies
 the runtime shell around it.
+
+The pattern is generic, not Morfx-specific. See:
+
+- [docs/dogfooding-external-tools.md](/Users/garaekz/Documents/projects/go/tfx/docs/dogfooding-external-tools.md)
+- [examples/tfx-external-tool.yaml](/Users/garaekz/Documents/projects/go/tfx/examples/tfx-external-tool.yaml)
+- [docs/dogfooding-morfx-standalone.md](/Users/garaekz/Documents/projects/go/tfx/docs/dogfooding-morfx-standalone.md)
 
 Named-flow example:
 

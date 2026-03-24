@@ -70,3 +70,23 @@ func TestOverloadWithOptionsStillPanics(t *testing.T) {
 
 	_ = OverloadWithOptions([]any{"bad"}, overloadConfig{})
 }
+
+func TestMustOverloadStillPanics(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected panic")
+		}
+	}()
+
+	_ = MustOverload([]any{"bad"}, overloadConfig{})
+}
+
+func TestMustOverloadWithOptionsStillPanics(t *testing.T) {
+	defer func() {
+		if recovered := recover(); recovered == nil {
+			t.Fatal("expected panic")
+		}
+	}()
+
+	_ = MustOverloadWithOptions([]any{"bad"}, overloadConfig{})
+}

@@ -124,6 +124,51 @@ func TestTryStartRejectsInvalidMultipathArgs(t *testing.T) {
 	}
 }
 
+func TestMustAliasesPanicOnInvalidMultipathArgs(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		fn   func()
+	}{
+		{name: "progress", fn: func() { _ = MustStart("bad") }},
+		{name: "spinner", fn: func() { _ = MustStartSpinner("bad") }},
+		{name: "stepper", fn: func() { _ = MustStepper("bad") }},
+		{name: "table", fn: func() { _ = MustTable("bad") }},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				if recover() == nil {
+					t.Fatal("expected panic")
+				}
+			}()
+			tt.fn()
+		})
+	}
+}
+
+func TestMustConstructorsPanicOnInvalidMultipathArgs(t *testing.T) {
+	t.Run("progress", func(t *testing.T) {
+		defer func() {
+			if recover() == nil {
+				t.Fatal("expected MustStart to panic")
+			}
+		}()
+		MustStart("bad")
+	})
+
+	t.Run("spinner", func(t *testing.T) {
+		defer func() {
+			if recover() == nil {
+				t.Fatal("expected MustStartSpinner to panic")
+			}
+		}()
+		MustStartSpinner("bad")
+	})
+}
+
 func TestRenderBarTTYWithEffectAndETA(t *testing.T) {
 	t.Parallel()
 

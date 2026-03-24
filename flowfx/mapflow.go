@@ -55,8 +55,17 @@ func newMapFlow(cfg MapFlowConfig) *MapFlow {
 // Supports two usage patterns:
 //   - NewMapFlow()                          // Zero-config, uses defaults
 //   - NewMapFlow(config)                    // Config struct
+//
+// NewMapFlow is kept as a zero-ceremony compatibility alias for
+// MustNewMapFlow. Prefer TryNewMapFlow when args may be user-provided or
+// otherwise fallible.
 func NewMapFlow(args ...any) *MapFlow {
-	return must(TryNewMapFlow(args...))
+	return MustNewMapFlow(args...)
+}
+
+// MustNewMapFlow creates a new map flow and panics on invalid multipath input.
+func MustNewMapFlow(args ...any) *MapFlow {
+	return mustValue(TryNewMapFlow(args...))
 }
 
 // TryNewMapFlow creates a new map flow without panicking on invalid args.

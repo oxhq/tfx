@@ -51,6 +51,16 @@ func TestRunFXAdditionalKeyAndBuilderCoverage(t *testing.T) {
 	_ = Start("bad")
 }
 
+func TestMustStartPanicsOnInvalidMultipathInput(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected MustStart to panic on invalid multipath input")
+		}
+	}()
+
+	_ = MustStart("bad")
+}
+
 func TestRunFXDecodeCSIAndRunesMoreBranches(t *testing.T) {
 	t.Parallel()
 

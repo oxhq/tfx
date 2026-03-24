@@ -28,15 +28,24 @@ func DefaultSpinnerConfig() SpinnerConfig {
 	}
 }
 
-// StartSpinner is a convenience function that creates a Spinner using a
-// configuration or a sequence of functional options.  See
-// internal/share.OverloadWithOptions for details.
-func StartSpinner(opts ...any) *Spinner {
+// MustStartSpinner creates a Spinner using a configuration or a sequence of
+// functional options and panics on invalid multipath input.
+//
+// Prefer TryStartSpinner when configuration may be user-provided or otherwise fallible.
+func MustStartSpinner(opts ...any) *Spinner {
 	spinner, err := TryStartSpinner(opts...)
 	if err != nil {
 		panic(err)
 	}
 	return spinner
+}
+
+// StartSpinner is a zero-ceremony compatibility alias for MustStartSpinner.
+//
+// Prefer TryStartSpinner for fallible input or MustStartSpinner when panic
+// semantics should be explicit at the callsite.
+func StartSpinner(opts ...any) *Spinner {
+	return MustStartSpinner(opts...)
 }
 
 // TryStartSpinner creates a Spinner using the provided options without panicking.

@@ -153,8 +153,6 @@ func TestDetermineTickIntervalAndStop(t *testing.T) {
 }
 
 func TestRunFXDebugLogging(t *testing.T) {
-	t.Parallel()
-
 	debugMode = false
 	defer func() { debugMode = false }()
 
