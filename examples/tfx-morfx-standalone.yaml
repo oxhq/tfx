@@ -1,0 +1,108 @@
+project: morfx
+description: Standalone Morfx pipeline orchestrated by TFX
+lanes:
+  - preview
+  - canary
+  - production
+working_dir: .
+default_flow: ci
+
+flows:
+  - name: ci
+    description: Fast verification for the standalone morfx CLI
+    before_all:
+      - id: toolchain
+        title: Print Go toolchain
+        command:
+          - go
+          - version
+    steps:
+      - id: test
+        title: Run repository tests
+        command:
+          - go
+          - test
+          - ./...
+
+      - id: build
+        title: Build standalone morfx binary
+        detail: Adapt ./cmd/morfx if your entrypoint lives elsewhere
+        command:
+          - go
+          - build
+          - -o
+          - bin/morfx
+          - ./cmd/morfx
+        artifacts:
+          - name: morfx-binary
+            path: bin/morfx
+            description: Built standalone morfx CLI
+
+      - id: smoke
+        title: Smoke test the standalone binary
+        detail: Low-risk command to ensure the built CLI starts correctly
+        command:
+          - ./bin/morfx
+          - --help
+
+  - name: dogfood
+    description: Exercise real fixture scenarios through the standalone CLI
+    default_lane: canary
+    steps:
+      - id: build
+        title: Build standalone morfx binary
+        command:
+          - go
+          - build
+          - -o
+          - bin/morfx
+          - ./cmd/morfx
+        artifacts:
+          - name: morfx-binary
+            path: bin/morfx
+            description: Built standalone morfx CLI
+
+      - id: fixtures
+        title: Run fixture harness
+        detail: Keep real morfx invocation details in a repo-local script
+        env:
+          MORFX_BIN: ./bin/morfx
+        command:
+          - bash
+          - ./scripts/dogfood-fixtures.sh
+        artifacts:
+          - name: dogfood-log
+            path: artifacts/dogfood.log
+            description: Captured fixture execution log
+            optional: true
+          - name: snapshots
+            path: artifacts/snapshots
+            description: Snapshot or diff output from the standalone runs
+            optional: true
+
+  - name: release
+    description: Build release-ready standalone artifacts
+    default_lane: canary
+    require_approval: true
+    secret_prompt: Release token
+    secret_env: MORFX_RELEASE_TOKEN
+    steps:
+      - id: verify
+        title: Run strict verification
+        command:
+          - make
+          - verify
+
+      - id: package
+        title: Package standalone release artifacts
+        detail: Replace this with the repo's actual release packaging target
+        lanes:
+          - canary
+          - production
+        command:
+          - make
+          - release-artifacts
+        artifacts:
+          - name: release-dist
+            path: dist
+            description: Packaged standalone release outputs

@@ -17,7 +17,8 @@ Most terminal output tools in Go fall into one of three traps:
 
 ## 🌱 The Vision
 
-TFX is a **low-friction, modular terminal toolkit** designed for CLI tools, not UIs.
+TFX is a **low-friction, modular terminal toolkit and runtime** designed for
+CLI tools, not UIs.
 
 It should feel like:
 
@@ -26,6 +27,10 @@ It should feel like:
 - `chalk`, `ora`, and `slog` had a Go-native baby.
 
 And it should require **zero ceremony** to get started.
+
+At the library level, that means colors, logs, progress, prompts, and render
+loops. At the product level, it also means a lightweight wrapper runtime that
+can host real tools and workflows without turning into a full TUI framework.
 
 ---
 
@@ -43,6 +48,8 @@ And it should require **zero ceremony** to get started.
 - CLI developers who care about polish.
 - Go teams who want structure without bloat.
 - Builders of tools, utilities, and dev workflows.
+- Teams that want to wrap real tools, such as refactoring engines, in a more
+  usable terminal runtime.
 - Anyone who’s ever used `fmt.Println("...")` and thought: _“this could look better.”_
 
 ---
@@ -50,6 +57,7 @@ And it should require **zero ceremony** to get started.
 ## 🔥 What TFX Will Never Be
 
 - A TUI framework.
+- A replacement for the underlying tools it hosts.
 - A runtime log server or full observability stack.
 - A “just copy this color string” toy lib.
 - An everything-and-the-kitchen-sink monolith.

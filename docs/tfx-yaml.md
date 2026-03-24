@@ -213,3 +213,22 @@ flows:
 2. Adjust `working_dir`, lanes, flows, and commands to match the repo.
 3. Run `go run ./cmd/tfx`.
 4. Fill in runtime inputs in the `Forms` tab and start the selected flow.
+
+## Standalone Tool Dogfooding
+
+`cmd/tfx` is not limited to Go package verification or to TFX itself.
+It also works well as a wrapper around a standalone CLI repository.
+
+For a tool such as `morfx`, the recommended pattern is:
+
+1. Build the standalone binary inside the repo.
+2. Run a low-risk smoke command such as `--help` or `version`.
+3. Execute fixture or snapshot scenarios through a repo-local harness.
+4. Package the resulting binary and any logs, diffs, or snapshots as artifacts.
+
+That approach keeps TFX focused on orchestration and reporting while the target
+repository keeps ownership of the real CLI invocation details.
+
+See [docs/dogfooding-morfx-standalone.md](./dogfooding-morfx-standalone.md)
+and [examples/tfx-morfx-standalone.yaml](../examples/tfx-morfx-standalone.yaml)
+for a concrete template.

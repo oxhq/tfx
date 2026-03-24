@@ -1,14 +1,21 @@
 # TFX
 
-> Elegant terminal effects & structured output for Go CLIs — composable, fast, and developer-first.
+> Terminal toolkit and runtime for Go CLIs — styled output, prompts, flows, logs, and operational wrappers without a full TUI framework.
 
 ---
 
 ## ✨ What is TFX?
 
-**TFX → TermFX** (short for _Terminal Effects_) is a modular Go toolkit for building expressive, styled, and structured terminal output — without the verbosity and fragmentation of typical Go terminal libraries.
+**TFX → TermFX** (short for _Terminal Effects_) is a modular Go toolkit for
+building expressive terminal software.
 
-It is _not_ a TUI framework. It is a low-friction, highly composable set of tools for CLIs and utilities that need more than just `fmt.Println`, but less than `bubbletea`.
+It started as color, logging, progress, and structured output. It now also
+ships a lightweight runtime through `runfx`, `flowfx`, `formfx`, and `cmd/tfx`
+for wrapping real CLI workflows.
+
+It is still _not_ a TUI framework. It is the layer between `fmt.Println` and a
+full app framework: enough structure to build polished operational CLIs, but
+without surrendering your whole architecture to a renderer.
 
 ---
 
@@ -20,6 +27,13 @@ It is _not_ a TUI framework. It is a low-friction, highly composable set of tool
 | `log/slog`    | You want structured logs, no styling   |
 | `TFX`         | You want structure _and_ style ✨      |
 | `bubbletea`   | You’re building a full interactive TUI |
+
+Use TFX when you want one or more of these at the same time:
+
+- better terminal UX than ad-hoc prints
+- a composable render/runtime loop
+- prompts and validation without a heavy app framework
+- a repeatable wrapper around real commands or tools
 
 ---
 
@@ -61,10 +75,23 @@ It is _not_ a TUI framework. It is a low-friction, highly composable set of tool
   - `runfx` render loops and multiplexed visuals
   - `formfx` prompts, confirms, selects, and validation
   - `flowfx` sequences, branches, retries, scripts, and runners
-  - `cmd/tfx` as an integrated wrapper for config-driven pipelines
+  - `cmd/tfx` as an integrated wrapper for config-driven pipelines and tool-hosting workflows
 
 - Progress bars, spinners, steppers, and tables with smart rendering
 - Internal `share/` helpers: `Option[T]`, `Overload[T]` (standardized pattern)
+
+## 🧭 What TFX Is, Operationally
+
+Today TFX has two faces:
+
+- **Library surface** for Go developers: `color`, `logfx`, `progrefx`,
+  `runfx`, `formfx`, `flowfx`, `writer`, `terminal`
+- **Runtime surface** for operational wrappers: `cmd/tfx` plus `tfx.yaml`
+
+That second layer matters because it lets TFX host real tools. In practice,
+that means a project like `morfx` can stay focused on AST refactoring while TFX
+owns the terminal runtime around it: flow selection, prompts, progress, logs,
+hooks, and artifacts.
 
 ---
 
@@ -172,6 +199,10 @@ This repository ships its own real root config in
 `go run ./cmd/tfx` from the repo root gives you actual `ci`, `quality`, and
 `release` flows for TFX itself.
 
+This is also the pattern TFX uses to host other standalone tools. `morfx` is
+the reference example: Morfx owns the refactoring engine, while TFX supplies
+the runtime shell around it.
+
 Named-flow example:
 
 ```yaml
@@ -240,6 +271,9 @@ Behavior notes:
 
 For the full schema and a copy-pasteable sample, see
 [docs/tfx-yaml.md](./docs/tfx-yaml.md) and [examples/tfx.yaml](./examples/tfx.yaml).
+For standalone-tool dogfooding, including a real `morfx`-style CLI workflow,
+see [docs/dogfooding-morfx-standalone.md](./docs/dogfooding-morfx-standalone.md)
+and [examples/tfx-morfx-standalone.yaml](./examples/tfx-morfx-standalone.yaml).
 For the concrete release runbook, see [docs/release-v0.1.1.md](./docs/release-v0.1.1.md).
 For the release summary itself, see [docs/release-notes-v0.1.1.md](./docs/release-notes-v0.1.1.md).
 
@@ -260,6 +294,17 @@ logfx.If(err).AsWarn().Msg("warn msg")            // 3. DSL / fluent
 
 This consistency is achieved via internal helpers like `Overload()` and `Option[T]`.
 
+## 🔌 TFX and Morfx
+
+If you are using both projects together, the boundary is simple:
+
+- **TFX** is the terminal environment and workflow runtime
+- **Morfx** is the refactoring engine
+
+TFX should not absorb AST editing concerns. Morfx should not absorb prompt,
+progress, or wrapper-runtime concerns. They fit because their responsibilities
+stay separate.
+
 ---
 
 ## 📚 Docs
@@ -269,6 +314,7 @@ This consistency is achieved via internal helpers like `Overload()` and `Option[
 - [ROADMAP.md](./ROADMAP.md) – current status and future plans
 - [MULTIPATH.md](./MULTIPATH.md) – why TFX APIs support multiple entry paths
 - [docs/tfx-yaml.md](./docs/tfx-yaml.md) – `cmd/tfx` config schema and execution model
+- [docs/dogfooding-morfx-standalone.md](./docs/dogfooding-morfx-standalone.md) – standalone CLI dogfooding pattern for `cmd/tfx`
 
 ---
 
