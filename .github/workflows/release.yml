@@ -97,9 +97,9 @@ jobs:
               title="$default_title"
             fi
             gh release edit "$GITHUB_REF_NAME" --title "$title" --notes-file release/RELEASE_NOTES.md
-            gh release upload "$GITHUB_REF_NAME" release/*.tar.gz release/SHA256SUMS --clobber
+            gh release upload "$GITHUB_REF_NAME" release/*.tar.gz release/*.zip release/SHA256SUMS --clobber
           else
-            gh release create "$GITHUB_REF_NAME" release/*.tar.gz release/SHA256SUMS \
+            gh release create "$GITHUB_REF_NAME" release/*.tar.gz release/*.zip release/SHA256SUMS \
               --title "$default_title" \
               --notes-file release/RELEASE_NOTES.md
           fi

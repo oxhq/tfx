@@ -20,7 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.sh | ba
 Install a specific version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.sh | bash -s -- -v v0.1.1
+curl -fsSL https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.sh | bash -s -- -v v0.2.0
 ```
 
 Change the install directory:
@@ -38,7 +38,7 @@ irm https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.ps1 | iex
 Install a specific version:
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.ps1))) -Version v0.1.1
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/oxhq/tfx/main/tools/install.ps1))) -Version v0.2.0
 ```
 
 ## Manual Install

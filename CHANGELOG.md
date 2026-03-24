@@ -2,7 +2,18 @@
 
 ## Unreleased
 
-Target: `v0.2.0`
+Target: `v0.3.0`
+
+## v0.2.0 - 2026-03-23
+
+### Added
+
+- Cross-platform install scripts and release packaging for `linux`, `darwin`,
+  and `windows` on both `amd64` and `arm64`.
+- Generic external-tool dogfooding guidance and templates beyond the original
+  `morfx`-only story.
+- Real-world runtime adoption in both `morfx` and `mitl`, including CI usage
+  that invokes `tfx --flow ... --run`.
 
 ### Changed
 
@@ -13,6 +24,12 @@ Target: `v0.2.0`
 - Added install docs and scripts plus Windows release packaging support.
 - Expanded the dogfooding story from Morfx-only to a generic external-tool
   pattern with real adoption in both `morfx` and `mitl`.
+
+### Notes
+
+- This is the first minor release after the inaugural `v0.1.x` line.
+- The public runtime shape is now stable enough for broader dogfooding and
+  external adoption, but the project remains in the `v0.x` iteration phase.
 
 ## v0.1.1 - 2026-03-23
 

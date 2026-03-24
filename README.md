@@ -332,8 +332,8 @@ For the full schema and a copy-pasteable sample, see
 For standalone-tool dogfooding, including a real `morfx`-style CLI workflow,
 see [docs/dogfooding-morfx-standalone.md](./docs/dogfooding-morfx-standalone.md)
 and [examples/tfx-morfx-standalone.yaml](./examples/tfx-morfx-standalone.yaml).
-For the concrete release runbook, see [docs/release-v0.1.1.md](./docs/release-v0.1.1.md).
-For the release summary itself, see [docs/release-notes-v0.1.1.md](./docs/release-notes-v0.1.1.md).
+For the concrete release runbook, see [docs/release-v0.2.0.md](./docs/release-v0.2.0.md).
+For the release summary itself, see [docs/release-notes-v0.2.0.md](./docs/release-notes-v0.2.0.md).
 
 ---
 
